@@ -1,6 +1,6 @@
 <?php
 include("dbcompair.php");
-include("dbcompair_database_tables.php");
+include("dbcompair_compair_tables.php");
 
 
 $compair_tables = new compair_tables();

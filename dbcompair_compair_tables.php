@@ -4,7 +4,7 @@
 class compair_tables extends dbcompair {
 
 	private $dbdifference;
-	private $table_create_string = "";
+	private $table_create_string;
 	
 	public function __construct(){
 		parent::__construct();
@@ -26,13 +26,18 @@ class compair_tables extends dbcompair {
 		//difference of the tables
 		$this->dbdifference = $this->arrayDiff($db1_tables, $db2_tables);
 		$this->createTables();
+		var_dump($this->table_create_string);
 	}
 	
 	private function createTables(){
 		foreach($this->dbdifference as $key => $db){
 			foreach($db as $table){
-				$response = $this->dbconnection[$key]->query('SHOW CREATE TABLE '.$table)->fetch_assoc();
-				$table_create_string .= $response["Create Table"];
+				if($result = $this->dbconnection[$key]->query('SHOW CREATE TABLE '.$table)){
+					$response = $result->fetch_row();
+					$this->table_create_string[$key] .= $response[1]."\n\n";
+				} else {
+					echo 'FAILED :: '.'SHOW CREATE TABLE '.$table; 
+				}
 			}
 		}
 	}
@@ -47,7 +52,7 @@ class compair_tables extends dbcompair {
 				}
 			}
 		$arrays[1] = $array1;
-		$arrays[2] = $array2;
+		$arrays[2] = array_flip($array2);
 		return $arrays;
 	}
 }
