@@ -3,9 +3,10 @@ dbcompair
 
 Object Oriented PHP project which will compair two databases for changes
 
-/*
-base file which is used to extend the classes for other scripts
-*/
+
+base file which is used to extend the classes for other scripts. which 
+will manage the connect settings
+
 dbcompair.php
 
 compair tables
