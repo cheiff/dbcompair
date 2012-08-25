@@ -80,7 +80,7 @@ class compair_tables extends dbcompair {
 			$this->insert_record_query[$dbName] = implode(";\n\n",$this->insert_record_queries[$dbName]);
 		}
 	}
-	 public function saveInsertIntoQuery($filename = 'InsertInto'){
+	 public function saveInsertIntoQuery($filename = 'insertinto'){
 		#loop though the records database wise
 		foreach($this->insert_record_query as $dbName => $value){
 			#write the data to files
