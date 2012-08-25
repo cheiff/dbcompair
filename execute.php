@@ -4,8 +4,7 @@ include("dbcompair_compair_tables.php");
 
 
 $compair_tables = new compair_tables();
-
-$diff = $compair_tables->execute();
-
-
-var_dump($diff);
+$compair_tables->findDifference();
+$compair_tables->buildCreateTablesQuery();
+$compair_tables->saveCreateTablesQuery();
+$compair_tables->buildInsertIntoQuery();
