@@ -6,6 +6,8 @@ class compair_tables extends dbcompair {
 	private $dbdifference;
 	private $table_create_string;
 	private $table_create_strings;
+	private $insert_record_queries;
+	private $insert_record_query;
 	
 	public function __construct(){
 		parent::__construct();
@@ -31,16 +33,16 @@ class compair_tables extends dbcompair {
 	}
 	
 	public function buildCreateTablesQuery(){
-		foreach($this->dbdifference as $key => $db){
+		foreach($this->dbdifference as $dbName => $db){
 			foreach($db as $table){
-				if($result = $this->dbconnection[$key]->query('SHOW CREATE TABLE '.$table)){
+				if($result = $this->dbconnection[$dbName]->query('SHOW CREATE TABLE '.$table)){
 					$response = $result->fetch_row();
-					$this->table_create_strings[$key] = $response[1];
+					$this->table_create_strings[$dbName] = $response[1];
 				} else {
 					echo 'FAILED :: '.'SHOW CREATE TABLE '.$table; 
 				}
 			}
-			$this->table_create_string[$db] = implode(";\n\n",$this->table_create_strings);
+			$this->table_create_string[$dbName] = implode(";\n\n",$this->table_create_strings);
 			unset($this->table_create_strings);
 		}
 	}
@@ -52,13 +54,14 @@ class compair_tables extends dbcompair {
 	}
 
 	public function buildInsertIntoQuery(){
-		foreach($this->dbdifference as $key => $db){
+		foreach($this->dbdifference as $dbName => $db){
+			#initialize the variables
                 	foreach($db as $table){
 				#list all the records in the table
 				$InsertQuery = "SELECT * FROM `".$table."` ;";
-				$result = $this->dbconnection[$key]->query($InsertQuery);
+				$result = $this->dbconnection[$dbName]->query($InsertQuery);
 				#exit in case of error
-				if(!$result){ echo ($this->dbconnection[$key]->error);exit(); }
+				if(!$result){ echo ($this->dbconnection[$dbName]->error);exit(); }
 				
 				#loop through the records list and create insert query
 				while ($row = $result->fetch_assoc()){
@@ -68,11 +71,13 @@ class compair_tables extends dbcompair {
 						$insertSQL .= " `" . $field . "` = '" . $value . "', ";
 					}
 					#collect the queries to a array
-					$this->insert_record_querys[$db][$table] = $insertSQL;
+					$table_insert_records[] = trim($insertSQL, ", ");
 				}
+				$this->insert_record_queries[$dbName][$table] = implode(";\n", $table_insert_records);
+				unset($table_insert_records);
 			}
 			//merge the list of queryes to a single query
-			$this->insert_record_query[$db] = implode(";\n\n",$this->insert_record_querys[$db]);
+			$this->insert_record_query[$dbName] = implode(";\n\n",$this->insert_record_queries[$dbName]);
 		}
 	}
 	 public function saveInsertIntoQuery($filename = 'InsertInto'){
@@ -86,9 +91,9 @@ class compair_tables extends dbcompair {
 	private function arrayDiff($array1, $array2)
 	{
 		$array2 = array_flip($array2);
-			foreach ($array1 as $key => $value) {
+			foreach ($array1 as $dbName => $value) {
 				if(isset($array2[$value])) {
-					unset($array1[$key]);
+					unset($array1[$dbName]);
 					unset($array2[$value]);
 				}
 			}
