@@ -30,30 +30,53 @@ class compair_tables extends dbcompair {
 		$result2->close();
 		//difference of the tables
 		$this->dbdifference = $this->arrayDiff($db1_tables, $db2_tables);
+    //print_r($this->dbdifference);
 	}
 	
 	public function buildCreateTablesQuery(){
 		foreach($this->dbdifference as $dbName => $db){
 			foreach($db as $table){
+      //  echo "$table\n";
 				if($result = $this->dbconnection[$dbName]->query('SHOW CREATE TABLE '.$table)){
 					$response = $result->fetch_row();
-					$this->table_create_strings[$dbName] = $response[1];
+					$this->table_create_strings[$dbName][$table] = $response[1];
 				} else {
 					echo 'FAILED :: '.'SHOW CREATE TABLE '.$table; 
 				}
 			}
-			$this->table_create_string[$dbName] = implode(";\n\n",$this->table_create_strings);
-			unset($this->table_create_strings);
+      if (!empty($this->table_create_strings)){
+   			$this->table_create_string[$dbName] = implode(";\n\n",$this->table_create_strings[$dbName]);
+	  		unset($this->table_create_strings);
+      }
 		}
 	}
 	
 	public function saveCreateTablesQuery($filename = 'createtables.sql'){
-		foreach($this->table_create_string as $dbName => $value){
-			file_put_contents($filename.'_'.$dbName.'.sql', $value);
-		}
+    if (!empty($this->table_create_string)){
+      foreach($this->table_create_string as $dbName => $value){
+        file_put_contents($filename.'_'.$dbName.'.sql', $value);
+      }
+    }
 	}
+  public function migrateTables(){
+    if (!empty($this->table_create_string)){
+      foreach($this->table_create_string as $dbName => $value){
+          if ($value != ""){
+            $query = $this->dbconnection[2]->real_escape_string($value);
+            $result = $this->dbconnection[2]->multi_query($value);
+            $error = $this->dbconnection[2]->error;
+            if ($error != ""){
+              echo "Error: \n";
+              print_r($error);
+            }
+          }
+      }
+    }
+
+  } 
 
 	public function buildInsertIntoQuery(){
+  //  print_r($this->dbdifference);
 		foreach($this->dbdifference as $dbName => $db){
 			#initialize the variables
                 	foreach($db as $table){
@@ -65,6 +88,7 @@ class compair_tables extends dbcompair {
 				
 				#loop through the records list and create insert query
 				while ($row = $result->fetch_assoc()){
+          print_r($row);
 					#create insert query for the row
 					$insertSQL = "INSERT INTO `" . $table . "` SET ";
 					foreach ($row as $field => $value) {
@@ -73,20 +97,26 @@ class compair_tables extends dbcompair {
 					#collect the queries to a array
 					$table_insert_records[] = trim($insertSQL, ", ");
 				}
-				$this->insert_record_queries[$dbName][$table] = implode(";\n", $table_insert_records);
-				unset($table_insert_records);
+        if (!empty($table_insert_records)){
+          $this->insert_record_queries[$dbName][$table] = implode(";\n", $table_insert_records);
+          unset($table_insert_records);
+        }
 			}
 			//merge the list of queryes to a single query
-			$this->insert_record_query[$dbName] = implode(";\n\n",$this->insert_record_queries[$dbName]);
+      if (!empty($this->insert_record_queries[$dbName])){
+			  $this->insert_record_query[$dbName] = implode(";\n\n",$this->insert_record_queries[$dbName]);
+      }
 		}
 	}
 	 public function saveInsertIntoQuery($filename = 'insertinto'){
-		#loop though the records database wise
+		#loop through the records database wise
 		foreach($this->insert_record_query as $dbName => $value){
 			#write the data to files
 			file_put_contents($filename.'_'.$dbName.'.sql', $value);
 		}
 	}
+  
+
 
 	private function arrayDiff($array1, $array2)
 	{

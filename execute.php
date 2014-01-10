@@ -7,4 +7,6 @@ $compair_tables = new compair_tables();
 $compair_tables->findDifference();
 $compair_tables->buildCreateTablesQuery();
 $compair_tables->saveCreateTablesQuery();
-$compair_tables->buildInsertIntoQuery();
+$compair_tables->migrateTables();
+
+//$compair_tables->buildInsertIntoQuery();

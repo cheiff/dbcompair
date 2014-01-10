@@ -7,11 +7,11 @@ class dbcompair{
 	protected $dbconnection = array();
 	
 	public function __construct(){
-		$this->host = "LOCALHOST";
-		$this->user = "root";
-		$this->pass = "oshan1991";
-		$this->dbname[1] = "one_myprod";
-		$this->dbname[2] = "one_myprod_2";
+		$this->host = "localhost";
+		$this->user = "joomlaen";
+		$this->pass = "joomlaen";
+		$this->dbname[1] = "joomlaen";
+		$this->dbname[2] = "joomlaes";
 	}
 	
 	protected function connect(){
