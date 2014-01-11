@@ -1,7 +1,7 @@
 <?php
-/*compair the tables in the databases*/
+/*compare the tables in the databases*/
 
-class compair_tables extends dbcompair {
+class compare_tables extends dbcompare {
 
 	private $dbdifference;
 	private $table_create_string;

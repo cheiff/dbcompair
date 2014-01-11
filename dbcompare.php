@@ -1,5 +1,5 @@
 <?php
-class dbcompair{
+class dbcompare{
 	private $host = "";
 	private $user = "";
 	private $pass = "";

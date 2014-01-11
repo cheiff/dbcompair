@@ -1,7 +1,7 @@
-dbcompair
+dbcompare
 =========
 
-Object Oriented PHP project which will compair two databases for changes
+Object Oriented PHP project which will compare two databases for changes
 
 base
 ====
@@ -9,9 +9,9 @@ base
 base file which is used to extend the classes for other scripts. which 
 will manage the connect settings
 
-dbcompair.php
+dbcompare.php
 
-compair tables
+compare tables
 ==============
 
 This file will list all the tables from db1 and db2 find out the changes
@@ -23,19 +23,19 @@ of tables.
 		* create table script
 		* alter table script
 
-dbcompair_compair_tables.php
+dbcompare_compare_tables.php
 
 /**TODO**/
 
-compair data
+compare data
 ============
 
-This file will identify the key of the table, compair data of the 
+This file will identify the key of the table, compare data of the 
 two tables of two databases.identity the different columns and 
 create a html file with checkboxes for the user to select which 
 changes are the latest
 
-dbcompair_compair_data.php
+dbcompare_compare_data.php
 
 
 CHECKLIST
